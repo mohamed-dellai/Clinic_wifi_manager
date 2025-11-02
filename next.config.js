@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
+
+const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   experimental: {
@@ -12,4 +14,14 @@ module.exports = {
     domains: [],
     unoptimized: process.env.NODE_ENV !== 'production',
   },
+  // Add Webpack configuration for the Prisma Plugin
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.plugins.push(new PrismaPlugin());
+    }
+    // Important: return the modified config
+    return config;
+  },
 };
+
+module.exports = nextConfig;
