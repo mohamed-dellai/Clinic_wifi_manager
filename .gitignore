@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Node.js
+# attention: when using install with `--prefix` the folder is named `prefix` (e.g. `other_modules`)
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.cache
+# optional npm cache directory
+.npm
+
+# Runtime data
+*.tgz
+
+# Next.js
+.next/
+/out/
+
+# Prisma
+*.db
+
+# Production
+/build
+
+# misc
+.DS_Store
+*.env*
+.vscode/

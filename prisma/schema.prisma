@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Roles in the system: admins and secretaries
+enum Role {
+  ADMIN
+  SECRETARY
+}
+
+/// Patient type: resident (long-term) or regular (short-term)
+enum PatientType {
+  RESIDENT
+  REGULAR
+}
+
+/// Unit for validity duration: hours (for regular) or days (for residents)
+enum ValidityUnit {
+  HOURS
+  DAYS
+}
+
+model User {
+  id           Int             @id @default(autoincrement())
+  email        String          @unique
+  password     String
+  role         Role            @default(SECRETARY)
+  createdAt    DateTime        @default(now())
+
+  // passwords created by this user (secretary/admin)
+  wifiPasswords WifiPassword[]
+  // SSIDs managed/owned by this user
+  ssids         Ssid[]
+}
+
+model Patient {
+  id           Int             @id @default(autoincrement())
+  name         String
+  /// International phone number (E.164 recommended)
+  phone        String          @unique
+  type         PatientType     @default(REGULAR)
+  createdAt    DateTime        @default(now())
+
+  // history of Wi‑Fi passwords issued to this patient
+  wifiPasswords WifiPassword[]
+}
+
+/// Representation of a Wi‑Fi password issued to a patient by a user (secretary/admin)
+model WifiPassword {
+  id           Int        @id @default(autoincrement())
+  password     String
+
+  // relation to patient
+  patient      Patient    @relation(fields: [patientId], references: [id])
+  patientId    Int
+
+  // who created/issued this password
+  createdBy    User       @relation(fields: [createdById], references: [id])
+  createdById  Int
+
+  // validity expressed as a duration + unit
+  // e.g. duration=4, unit=HOURS  => valid for 4 hours
+  //      duration=7, unit=DAYS   => valid for 7 days
+  duration     Int
+  unit         ValidityUnit
+  // Optional: explicit absolute times (can be used instead of duration)
+  validFrom    DateTime?
+  validTo      DateTime?
+  // which SSID this password applies to (optional for existing rows)
+  ssid         Ssid?      @relation(fields: [ssidId], references: [id])
+  ssidId       Int?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+}
+
+/// Available Wi‑Fi SSIDs (networks) managed in the clinic
+model Ssid {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique
+  description String?
+  // who created/owns this SSID entry
+  createdBy   User           @relation(fields: [createdById], references: [id])
+  createdById Int
+  // passwords issued for this SSID
+  wifiPasswords WifiPassword[]
+  createdAt   DateTime       @default(now())
+}
