@@ -6,14 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "start": "next start",
-    "prisma:generate": "prisma generate",
-    "prisma:dbpush": "prisma db push",
-    "postinstall": "prisma generate"
+    "start": "next start"
   },
-  "prisma": {
-    "engineFiles": ["libquery_engine-rhel-openssl-3.0.x.so.node"]
-  },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
