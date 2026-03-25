@@ -30,21 +30,13 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
   },[q, ssidId, dateFrom, dateTo, isActive])
 
   return (
-    <div className="filter-container" style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '16px',
-      padding: '16px',
-      backgroundColor: '#f5f5f5',
-      borderRadius: '8px',
-      marginBottom: '20px'
-    }}>
+    <div className="filter-container">
       <h3 style={{margin: '0 0 8px 0', fontSize: '16px'}}>Filtres de recherche</h3>
       
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px'}}>
+      <div className="filter-grid">
         {/* Filtre de recherche textuelle */}
         <div className="filter-item">
-          <label htmlFor="search-input" style={{display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px'}}>
+          <label htmlFor="search-input">
             Recherche
           </label>
           <input 
@@ -58,7 +50,7 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
         
         {/* Filtre par SSID */}
         <div className="filter-item">
-          <label htmlFor="ssid-select" style={{display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px'}}>
+          <label htmlFor="ssid-select">
             Réseau Wi-Fi (SSID)
           </label>
           <select 
@@ -73,10 +65,10 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
         </div>
       </div>
       
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
+      <div className="filter-grid" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))'}}>
         {/* Filtres de date */}
         <div className="filter-item">
-          <label htmlFor="date-from" style={{display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px'}}>
+          <label htmlFor="date-from">
             Date de début
           </label>
           <input 
@@ -89,7 +81,7 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
         </div>
         
         <div className="filter-item">
-          <label htmlFor="date-to" style={{display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px'}}>
+          <label htmlFor="date-to">
             Date de fin
           </label>
           <input 
@@ -103,7 +95,7 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
         
         {/* Filtre par statut */}
         <div className="filter-item">
-          <label htmlFor="status-select" style={{display: 'block', marginBottom: '6px', fontWeight: 'bold', fontSize: '14px'}}>
+          <label htmlFor="status-select">
             Statut
           </label>
           <select 

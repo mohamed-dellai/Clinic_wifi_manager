@@ -27,23 +27,16 @@ export async function updateWifiPasswordsStatus() {
     for (const password of activePasswords) {
       let isExpired = false
       
-      // Si validTo est défini, utiliser cette date directement
-      if (password.validTo) {
-        isExpired = now > password.validTo
-      } 
-      // Sinon, calculer la date d'expiration basée sur duration et unit
-      else {
-        let expirationDate
-        
-        if (password.unit === 'HOURS') {
-          expirationDate = add(password.createdAt, { hours: password.duration })
-        } else if (password.unit === 'DAYS') {
-          expirationDate = add(password.createdAt, { days: password.duration })
-        }
-        
-        if (expirationDate) {
-          isExpired = now > expirationDate
-        }
+      // Calculer la date d'expiration basée sur duration et unit
+      let expirationDate = null
+      if (password.unit === 'HOURS') {
+        expirationDate = add(password.createdAt, { hours: password.duration })
+      } else if (password.unit === 'DAYS') {
+        expirationDate = add(password.createdAt, { days: password.duration })
+      }
+
+      if (expirationDate) {
+        isExpired = now > expirationDate
       }
       
       // Si le mot de passe est expiré, le désactiver

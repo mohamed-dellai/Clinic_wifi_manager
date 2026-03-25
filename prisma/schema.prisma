@@ -68,9 +68,7 @@ model WifiPassword {
   //      duration=7, unit=DAYS   => valid for 7 days
   duration     Int
   unit         ValidityUnit
-  // Optional: explicit absolute times (can be used instead of duration)
-  validFrom    DateTime?
-  validTo      DateTime?
+ 
   // which SSID this password applies to (optional for existing rows)
   ssid         Ssid?      @relation(fields: [ssidId], references: [id])
   ssidId       Int?

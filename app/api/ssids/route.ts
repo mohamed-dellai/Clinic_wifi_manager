@@ -32,6 +32,10 @@ export async function POST(req: Request){
     const { name, description } = body
     if(!name) return NextResponse.json({ error: 'Name required' }, { status: 400 })
 
+    if(payload.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+
+
     const created = await prisma.ssid.create({ data: { name, description: description || null, createdById: payload.userId } })
     return NextResponse.json({ ok: true, ssid: created })
   }catch(err){

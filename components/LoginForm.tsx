@@ -64,7 +64,7 @@ export default function LoginForm(){
 
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:8}}>
         <div className="muted">Mot de passe oublié ?</div>
-        <button className="btn" type="submit" disabled={loading}>{loading? 'Connexion…' : 'Se connecter'}</button>
+        <button className="btn primary" type="submit" disabled={loading}>{loading? 'Connexion…' : 'Se connecter'}</button>
       </div>
 
       <div className="help">Les utilisateurs connectés seront redirigés vers le tableau de bord.</div>

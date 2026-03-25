@@ -2,13 +2,9 @@ import { NextResponse } from 'next/server'
 import prisma from '../../../lib/prisma'
 import { verifyJwt } from '../../../lib/auth'
 import cookie from 'cookie'
+import { add } from 'date-fns'
 
-function makePassword(length = 8){
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'
-  let out = ''
-  for(let i=0;i<length;i++) out += chars[Math.floor(Math.random()*chars.length)]
-  return out
-}
+// Passwords are now the patient's phone number; no generator needed
 
 export async function GET(req: Request){
   try{
@@ -55,7 +51,24 @@ export async function POST(req: Request){
       patient = await prisma.patient.create({ data: { name: name || phone, phone, type: type || 'REGULAR' } })
     }
 
-    const pwd = makePassword(8)
+    // use the phone number itself as the Wi‑Fi password
+    const pwd = phone
+
+    // prevent creating a new session if an active (unexpired) one already exists for this phone
+    const latest = await prisma.wifiPassword.findFirst({
+      where: { patient: { phone } },
+      orderBy: { createdAt: 'desc' }
+    })
+    if(latest){
+      // compute expiration from duration + unit
+      let expiration: Date | null = null
+      if(latest.unit === 'HOURS') expiration = add(latest.createdAt, { hours: latest.duration })
+      else if(latest.unit === 'DAYS') expiration = add(latest.createdAt, { days: latest.duration })
+
+      if(expiration && new Date() < expiration){
+        return NextResponse.json({ error: 'An active session already exists for this phone number' }, { status: 400 })
+      }
+    }
 
     // determine ssidId: prefer provided ssidId, otherwise pick the first SSID owned by the user
     let chosenSsidId: number | null = ssidId ? Number(ssidId) : null

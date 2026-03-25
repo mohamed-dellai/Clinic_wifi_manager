@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import { add } from 'date-fns'
 import SessionFilter, { SessionFilters } from './SessionFilter'
 
 export default function SecretarySessions(){
@@ -82,35 +83,39 @@ export default function SecretarySessions(){
 
       <div className="session-list">
     {filtered.length === 0 && <div className="muted">Aucune session.</div>}
-        {filtered.map(s=> (
+        {filtered.map(s=> {
+          // compute expiration client-side
+          let expiration: Date | null = null
+          if(s.unit === 'HOURS') expiration = add(new Date(s.createdAt), { hours: s.duration })
+          else if(s.unit === 'DAYS') expiration = add(new Date(s.createdAt), { days: s.duration })
+          const isExpired = expiration ? new Date() > expiration : false
+          return (
           <div key={s.id} className="session-item">
-            <div className="session-row">
-              <div style={{display:'flex',alignItems:'center',gap:12}}>
-                <div style={{display:'flex',flexDirection:'column',gap:8}}>
-                  <div style={{display:'flex',alignItems:'center',gap:8}}>
-                    <div style={{fontWeight:800,fontSize:18}}>{s.password}</div>
-                    <div className="ssid-badge">{s.ssid?.name ?? 'SSID'}</div>
-                  </div>
-                  <div style={{display:'flex',gap:12,alignItems:'center'}}>
-                    <div style={{fontWeight:600}}>{s.patient?.name ?? '—'}</div>
-                    <div className="muted">{s.patient?.phone ?? '—'}</div>
-                  </div>
+            <div className="session-left">
+              <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{fontWeight:800,fontSize:18}}>{s.password}</div>
+                  <div className="ssid-badge">{s.ssid?.name ?? 'SSID'}</div>
+                </div>
+                <div style={{display:'flex',gap:12,alignItems:'center'}}>
+                  <div style={{fontWeight:600}}>{s.patient?.name ?? '—'}</div>
+                  <div className="muted">{s.patient?.phone ?? '—'}</div>
                 </div>
               </div>
-              <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:8}}>
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <span className={`status-dot ${s.isActive? 'status-active' : 'status-inactive'}`} title={s.isActive? 'Active':'Inactive'}></span>
-                  <div className="muted">{new Date(s.createdAt).toLocaleString()}</div>
-                </div>
-        <div className="session-actions">
-      <button className="btn secondary" onClick={()=>navigator.clipboard?.writeText(s.password)}>Copier</button>
-      <button className="btn" onClick={()=>handleDelete(s.id)}>Supprimer</button>
-        </div>
+            </div>
+            <div className="session-right">
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <div className={`status-chip ${isExpired? 'status-inactive' : 'status-active'}`} title={isExpired? 'Expired':'Active'}>{isExpired? 'Expirée' : 'Active'}</div>
+                <div className="muted">{new Date(s.createdAt).toLocaleString()}</div>
+              </div>
+              <div className="session-actions">
+                <button className="btn secondary" onClick={()=>navigator.clipboard?.writeText(s.password)}>Copier</button>
+                <button className="btn primary" onClick={()=>handleDelete(s.id)}>Supprimer</button>
               </div>
             </div>
             <div className="session-meta" style={{marginTop:8}}>Durée : {s.duration} {s.unit.toLowerCase()}</div>
           </div>
-        ))}
+        )})}
       </div>
     </div>
   )

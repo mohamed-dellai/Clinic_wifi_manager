@@ -1,113 +1,276 @@
-:root{
-  --bg: #f6f8fb;
-  --surface: #ffffff;
-  --muted: #6b7280;
-  --primary: #0f6cff;
-  --primary-600: #0858d6;
-  --success: #16a34a;
-  --danger: #ef4444;
-  --radius: 12px;
-  --card-shadow: 0 6px 24px rgba(12, 20, 40, 0.08);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap');
+
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Medical/Clinic Color Palette */
+  --color-primary: #00416A;
+  --color-primary-600: #003154;
+  --color-primary-700: #002847;
+  --color-secondary: #0097B2;
+  --color-accent: #17A2B8;
+  --color-success: #10B981;
+  --color-danger: #DC2626;
+  --color-warning: #F97316;
+  --color-muted: #64748B;
+  --color-border: #E2E8F0;
+  --color-bg-light: #F8FAFC;
+  --color-surface: #FFFFFF;
+
+  /* Typography */
+  --font-family-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-family-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-*{box-sizing: border-box}
-html,body,#root{height:100%}
-body{
-  margin:0;
-  background: linear-gradient(180deg, var(--bg), #ffffff);
-  color: #0b1220;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
-.btn{
-  text-decoration: none;
-}
-.page-center{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:32px;
-}
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
 
-.auth-card{
-  
-  background:var(--surface);
-  border-radius:var(--radius);
-  box-shadow:var(--card-shadow);
-  padding:28px;
-  border: 1px solid rgba(12,20,40,0.04);
-}
+  body {
+    @apply font-sans bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:18px;
-}
-.logo{
-  width:100px;height:100px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-600));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;
-}
-.title{font-size:20px;font-weight:600;margin:0}
-.subtitle{font-size:13px;color:var(--muted);margin-top:6px}
+  /* Typography Utilities */
+  @utility text-h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
 
-form{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-label{font-size:13px;color:#111827}
-input, select, textarea{
-  width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(12,20,40,0.06);background:#fbfdff;font-size:14px
-}
-input:focus, select:focus, textarea:focus{outline:none;box-shadow:0 0 0 4px rgba(15,108,255,0.08);border-color:var(--primary-600)}
+  @utility text-h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
 
-.form-row{display:flex;gap:12px}
-.field{display:flex;flex-direction:column;gap:6px}
+  @utility text-h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+  }
 
-.success-card{margin-top:16px;padding:14px;border-radius:10px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18)}
-.success-title{font-weight:600}
-.password-badge{padding:6px 12px;background:#fff;border-radius:8px;border:1px solid #e6e6e6;font-family:monospace}
-.copy-btn{padding:8px 10px;border-radius:8px;border:1px solid rgba(12,20,40,0.06);background:transparent;color:var(--muted);cursor:pointer}
-.copy-btn.copied{background:var(--primary);color:#fff;border-color:var(--primary)}
+  @utility text-h4 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+  }
 
-/* Sessions list styles */
-.session-list{width:100%;max-width:760px;background:var(--surface);border-radius:14px;padding:14px; margin: auto;}
-.session-item{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid rgba(12,20,40,0.04)}
-.session-item + .session-item{margin-top:12px}
-.session-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.session-meta{color:var(--muted);font-size:13px}
-.session-actions{display:flex;gap:8px}
-.ssid-badge{padding:6px 8px;border-radius:8px;background:rgba(15,108,255,0.06);color:var(--primary);font-weight:600;font-size:13px}
+  @utility text-body {
+    font-size: 0.9375rem;
+    line-height: 1.5rem;
+    font-weight: 400;
+  }
 
-.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
-.status-active{background:var(--success);box-shadow:0 0 0 4px rgba(16,185,129,0.06)}
-.status-inactive{background:var(--danger);box-shadow:0 0 0 4px rgba(239,68,68,0.04)}
+  @utility text-body-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+  }
 
-.row{display:flex;gap:12px}
+  @utility text-label {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
 
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:8px;background:var(--primary);color:white;border:none;cursor:pointer;font-weight:600
-}
-.btn.secondary{background:transparent;border:1px solid rgba(12,20,40,0.06);color:var(--muted)}
-
-.muted{color:var(--muted);font-size:13px}
-.help{font-size:13px;color:var(--muted);margin-top:8px}
-
-@media (max-width:480px){
-  .auth-card{padding:20px;margin:8px}
+  @utility text-muted-fg {
+    @apply text-muted;
+  }
+  html {
+    @apply font-sans;
+  }
 }
 
-/* Sessions list styling */
-.session-list{display:flex;flex-direction:column;gap:12px}
-.session-item{background:var(--surface);border:1px solid rgba(12,20,40,0.04);border-radius:10px;padding:14px;box-shadow:var(--card-shadow)}
-.session-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.ssid-badge{background:linear-gradient(90deg, rgba(15,108,255,0.08), rgba(8,88,214,0.06));color:var(--primary-600);padding:6px 10px;border-radius:8px;font-weight:600;font-size:13px}
-.session-actions button{min-width:72px}
-.session-meta{color:var(--muted);font-size:13px}
+@layer components {
+  /* Button Base Styles */
+  @utility btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+  }
 
-.status-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;box-shadow:0 1px 2px rgba(12,20,40,0.06)}
-.status-active{background:linear-gradient(180deg,#16a34a,#059669)}
-.status-inactive{background:linear-gradient(180deg,#ef4444,#dc2626)}
+  @utility btn-primary {
+    @apply btn-base bg-primary text-white hover:bg-primary-600;
+  }
 
-@media (max-width:640px){
-  .session-row{flex-direction:column;align-items:flex-start}
-  .session-row > div:last-child{align-self:stretch}
+  @utility btn-secondary {
+    @apply btn-base bg-surface border-border text-slate-900 hover:bg-bg-light;
+  }
+
+  @utility btn-ghost {
+    @apply btn-base text-primary hover:bg-primary/10;
+  }
+
+  /* Card Styles */
+  @utility card-base {
+    background: white;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  @utility card-hover {
+    transition: box-shadow 200ms ease, transform 200ms ease;
+  }
+
+  @utility card-hover:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }

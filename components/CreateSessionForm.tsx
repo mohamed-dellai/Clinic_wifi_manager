@@ -119,21 +119,21 @@ export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>v
 
   {error && <div style={{color:'var(--danger)'}}>{error}</div>}
 
-      <div style={{display:'flex',justifyContent:'flex-end',gap:8}}>
-  <button className="btn secondary" type="button" onClick={()=>{setName('');setPhone('')}}>Effacer</button>
-  <button className="btn" type="submit" disabled={loading}>{loading? 'Création...' : 'Créer la session'}</button>
-      </div>
+          <div style={{display:'flex',justifyContent:'flex-end',gap:8}}>
+            <button className="btn secondary" type="button" onClick={()=>{setName('');setPhone('')}}>Effacer</button>
+            <button className="btn primary" type="submit" disabled={loading}>{loading? 'Création...' : 'Créer l’accès Wi‑Fi'}</button>
+          </div>
 
       {/* success card showing generated password */}
       {createdSession && (
-        <div className="success-card">
+        <div className="success-card" role="status" aria-live="polite">
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
             <div>
               <div className="success-title">Session créée</div>
               <div className="muted" style={{fontSize:13}}>Partagez ce mot de passe Wi‑Fi avec le patient</div>
             </div>
             <div style={{display:'flex',alignItems:'center',gap:8}}>
-              <div className="password-badge">{createdSession.password}</div>
+              <div className="password-badge pulse">{createdSession.password}</div>
               <button
                 className={copied? 'copy-btn copied' : 'copy-btn'}
                 type="button"
@@ -159,7 +159,7 @@ export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>v
           </div>
 
           <div style={{marginTop:10,display:'flex',justifyContent:'flex-end'}}>
-            <button className="btn" type="button" onClick={()=>setCreatedSession(null)}>Créer une autre</button>
+            <button className="btn secondary" type="button" onClick={()=>setCreatedSession(null)}>Créer une autre</button>
           </div>
         </div>
       )}
