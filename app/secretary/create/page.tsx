@@ -1,42 +1,29 @@
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { verifyJwt } from '../../../lib/auth'
+import AppLayout from '@/components/AppLayout'
+import { TypographyH1, TypographySmall } from '@/components/ui/typography'
+import { Card, CardContent } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
-import BackToDashboardButton from '../../../components/BackToDashboardButton'
 
-const CreateSessionForm = dynamic(()=>import('../../../components/CreateSessionForm'))
+const CreateSessionForm = dynamic(()=>import('@/components/CreateSessionForm'))
 
 export default async function SecretaryCreatePage(){
-  const cookieStore = await cookies()
-  const token = cookieStore.get('clinic_token')?.value
-  const payload: any = token ? verifyJwt(token) : null
-  if(!payload) redirect('/login')
-  if(payload.role !== 'SECRETARY') redirect('/login')
-
   return (
-    <main style={{padding:24,maxWidth:"fit-content",margin:'0 auto'}}>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
-        <div>
-          <h1>Créer une session Wi‑Fi</h1>
-          <p className="muted">Bonjour</p>
+    <AppLayout requiredRole="SECRETARY">
+      <div className="p-8">
+        <div className="mb-8">
+          <TypographyH1>Créer une session Wi‑Fi</TypographyH1>
+          <TypographySmall className="text-muted-fg mt-2">
+            Générez un nouvel accès Wi-Fi pour un patient.
+          </TypographySmall>
         </div>
-        <form action="/api/auth/logout" method="post">
-          <button type="submit" className="btn">Déconnexion</button>
-        </form>
-      </div>
 
-      <div className="auth-card" style={{padding:18,marginTop:20}}>
-        <CreateSessionForm />
+        <div className="max-w-2xl">
+          <Card>
+            <CardContent className="p-6">
+              <CreateSessionForm />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <div style={{marginTop:16}}>
-        {/* Back button navigates to the correct dashboard based on current role */}
-        {/* Replaced Link with client component so it can inspect the user's role */}
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        {/* @ts-ignore */}
-        <BackToDashboardButton />
-      </div>
-    </main>
+    </AppLayout>
   )
 }

@@ -1,51 +1,76 @@
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { verifyJwt } from '../../lib/auth'
 import Link from 'next/link'
-import MaintenanceWorkerWrapper from '../../components/MaintenanceWorkerWrapper'
+import AppLayout from '@/components/AppLayout'
+import MaintenanceWorkerWrapper from '@/components/MaintenanceWorkerWrapper'
+import { TypographyH1, TypographySmall } from '@/components/ui/typography'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Plus, List, ArrowRight } from 'lucide-react'
 
 export default async function SecretaryPage(){
-  const cookieStore = await cookies()
-  const token = cookieStore.get('clinic_token')?.value
-  const payload: any = token ? verifyJwt(token) : null
-  if(!payload) redirect('/login')
-  if(payload.role !== 'SECRETARY') redirect('/login')
-
   return (
-    <main style={{padding:24,maxWidth:1000,margin:'0 auto'}}>
-      {/* Composant qui exécute le worker de maintenance en arrière-plan */}
+    <AppLayout requiredRole="SECRETARY">
       <MaintenanceWorkerWrapper />
       
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
-        <div>
-          <h1>Tableau de bord de la secrétaire</h1>
-          <p className="muted">Bienvenue</p>
+      <div className="p-8">
+        <div className="mb-8">
+          <TypographyH1>Tableau de bord</TypographyH1>
+          <TypographySmall className="text-muted-fg mt-2">Gérez vos sessions WiFi facilement</TypographySmall>
         </div>
-        <form action="/api/auth/logout" method="post">
-          <button type="submit" className="btn">Se déconnecter</button>
-        </form>
-      </div>
 
-      <section style={{display:'grid',gap:20,marginTop:20}}>
-        <div>
-          <div className="auth-card" style={{padding:18}}>
-            <h3>Créer une nouvelle session Wi-Fi</h3>
-            <p className="muted">Gardez le formulaire de création.</p>
-            <div style={{marginTop:12}}>
-              <Link className="btn" href="/secretary/create">Ouvrir le formulaire de création</Link>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+          {/* Create Session Card */}
+          <Link href="/secretary/create" className="block group">
+            <Card className="hover:shadow-lg transition-shadow h-full cursor-pointer hover:border-primary/50">
+              <CardHeader className="pb-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg group-hover:text-primary transition-colors">Nouvelle session</CardTitle>
+                    <CardDescription>Créer une session WiFi</CardDescription>
+                  </div>
+                  <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+                    <Plus className="w-5 h-5 text-success" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <TypographySmall className="text-muted-fg mb-4 block">
+                  Créez une nouvelle session WiFi pour les utilisateurs de la clinique
+                </TypographySmall>
+                <div className="flex items-center text-sm font-medium text-primary mt-4">
+                  <span>Créer</span>
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Sessions List Card */}
+          <Link href="/secretary/sessions" className="block group">
+            <Card className="hover:shadow-lg transition-shadow h-full cursor-pointer hover:border-primary/50">
+              <CardHeader className="pb-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg group-hover:text-primary transition-colors">Vos sessions</CardTitle>
+                    <CardDescription>Consulter et gérer</CardDescription>
+                  </div>
+                  <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                    <List className="w-5 h-5 text-primary" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <TypographySmall className="text-muted-fg mb-4 block">
+                  Voir, modifier et supprimer vos sessions WiFi
+                </TypographySmall>
+                <div className="flex items-center text-sm font-medium text-primary mt-4">
+                  <span>Consulter</span>
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
-        <div>
-          <div className="auth-card" style={{padding:18}}>
-            <h3>Vos sessions</h3>
-            <p className="muted">Consultez et gérez vos sessions.</p>
-            <div style={{marginTop:12}}>
-              <Link className="btn" href="/secretary/sessions">Voir les sessions</Link>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+      </div>
+    </AppLayout>
   )
 }

@@ -1,19 +1,18 @@
 import './globals.css'
-import { Geist } from "next/font/google";
+import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
 export const metadata = {
-  title: 'Clinic App',
-  description: 'A minimal Next.js + Prisma starter',
+  title: 'Clinic WiFi Manager',
+  description: 'Professional clinic WiFi session management system',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-bg-light">
         {children}
+        <Toaster position="top-right" />
       </body>
     </html>
   )

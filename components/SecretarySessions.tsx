@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import { add } from 'date-fns'
 import SessionFilter, { SessionFilters } from './SessionFilter'
+import { Button } from '@/components/ui/button'
+import { Copy, Trash2, Wifi, Clock, User, Phone } from 'lucide-react'
 
 export default function SecretarySessions(){
   const [sessions, setSessions] = useState<any[]>([])
@@ -43,8 +45,8 @@ export default function SecretarySessions(){
     return ()=>{ mounted = false }
   },[])
 
-  if(loading) return <div>Chargement des sessions…</div>
-  if(error) return <div style={{color:'var(--danger)'}}>{error}</div>
+  if(loading) return <div className="text-sm text-muted-fg animate-pulse">Chargement des sessions…</div>
+  if(error) return <div className="text-sm text-destructive">{error}</div>
 
   // apply filters client-side
   const filtered = sessions.filter(s=>{
@@ -76,46 +78,80 @@ export default function SecretarySessions(){
   })
 
   return (
-    <div>
-      <div style={{marginBottom:16}}>
+    <div className="space-y-6">
+      <div className="bg-card p-4 rounded-xl border shadow-sm">
         <SessionFilter ssids={ssids} onChange={(f)=>setFilters(f)} />
       </div>
 
-      <div className="session-list">
-    {filtered.length === 0 && <div className="muted">Aucune session.</div>}
+      <div className="space-y-4">
+        {filtered.length === 0 && (
+          <div className="text-center p-8 border border-dashed rounded-lg text-muted-fg bg-surface/50">
+            Aucune session trouvée.
+          </div>
+        )}
+        
         {filtered.map(s=> {
           // compute expiration client-side
           let expiration: Date | null = null
           if(s.unit === 'HOURS') expiration = add(new Date(s.createdAt), { hours: s.duration })
           else if(s.unit === 'DAYS') expiration = add(new Date(s.createdAt), { days: s.duration })
           const isExpired = expiration ? new Date() > expiration : false
+          
           return (
-          <div key={s.id} className="session-item">
-            <div className="session-left">
-              <div style={{display:'flex',flexDirection:'column',gap:6}}>
-                <div style={{display:'flex',alignItems:'center',gap:12}}>
-                  <div style={{fontWeight:800,fontSize:18}}>{s.password}</div>
-                  <div className="ssid-badge">{s.ssid?.name ?? 'SSID'}</div>
+            <div key={s.id} className="group flex flex-col md:flex-row md:items-center justify-between p-5 bg-card border rounded-xl shadow-sm hover:shadow-md transition-all gap-4">
+              <div className="space-y-3 flex-1">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-bold text-lg tracking-wide text-primary">{s.password}</span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border bg-background text-foreground">
+                    <Wifi className="w-3 h-3" />
+                    {s.ssid?.name ?? 'SSID'}
+                  </span>
+                  {isExpired ? (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-700 dark:text-red-400">Expirée</span>
+                  ) : (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">Active</span>
+                  )}
                 </div>
-                <div style={{display:'flex',gap:12,alignItems:'center'}}>
-                  <div style={{fontWeight:600}}>{s.patient?.name ?? '—'}</div>
-                  <div className="muted">{s.patient?.phone ?? '—'}</div>
+                
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-fg">
+                  <div className="flex items-center gap-1.5">
+                    <User className="w-4 h-4" />
+                    <span className="font-medium text-foreground">{s.patient?.name ?? '—'}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="w-4 h-4" />
+                    <span>{s.patient?.phone ?? '—'}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-4 h-4" />
+                    <span>{new Date(s.createdAt).toLocaleString()} ({s.duration} {s.unit.toLowerCase()})</span>
+                  </div>
                 </div>
+              </div>
+              
+              <div className="flex items-center gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  onClick={()=>navigator.clipboard?.writeText(s.password)}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="w-4 h-4" />
+                  <span className="hidden sm:inline">Copier</span>
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={()=>handleDelete(s.id)}
+                  className="flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Supprimer</span>
+                </Button>
               </div>
             </div>
-            <div className="session-right">
-              <div style={{display:'flex',alignItems:'center',gap:8}}>
-                <div className={`status-chip ${isExpired? 'status-inactive' : 'status-active'}`} title={isExpired? 'Expired':'Active'}>{isExpired? 'Expirée' : 'Active'}</div>
-                <div className="muted">{new Date(s.createdAt).toLocaleString()}</div>
-              </div>
-              <div className="session-actions">
-                <button className="btn secondary" onClick={()=>navigator.clipboard?.writeText(s.password)}>Copier</button>
-                <button className="btn primary" onClick={()=>handleDelete(s.id)}>Supprimer</button>
-              </div>
-            </div>
-            <div className="session-meta" style={{marginTop:8}}>Durée : {s.duration} {s.unit.toLowerCase()}</div>
-          </div>
-        )})}
+          )
+        })}
       </div>
     </div>
   )

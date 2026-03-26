@@ -71,7 +71,7 @@ export default function AdminSessions(){
 
   return (
     <div>
-      <div style={{marginBottom:16}}>
+      <div className="bg-card p-4 rounded-xl border shadow-sm mb-6">
         <SessionFilter ssids={ssids} onChange={(f)=>setFilters(f)} />
       </div>
 

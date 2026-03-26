@@ -1,6 +1,13 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Copy, CheckCircle2 } from 'lucide-react'
+
 export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>void }){
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -70,99 +77,131 @@ export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>v
   }, [type])
 
   return (
-    <form onSubmit={handleSubmit} className="create-session-form">
-      <div className="field">
-  <label htmlFor="name">Nom (optionnel)</label>
-  <input id="name" value={name} onChange={e=>setName(e.target.value)} placeholder="Nom complet du patient" />
-      </div>
-      <div className="field">
-  <label htmlFor="phone">Téléphone (international)</label>
-  <input id="phone" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+33123456789" />
-      </div>
-
-      <div className="field">
-        <label htmlFor="ssid">SSID (Réseau Wi‑Fi)</label>
-        {ssidLoading ? (
-          <div className="muted">Chargement des SSIDs…</div>
-        ) : ssids.length === 0 ? (
-          <div className="muted">Aucun SSID disponible. Créez-en un dans le panneau d'administration.</div>
-        ) : (
-          <select id="ssid" value={selectedSsidId ?? undefined} onChange={e=>setSelectedSsidId(Number(e.target.value))}>
-            {ssids.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-        )}
-      </div>
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="name">Nom (optionnel)</Label>
+          <Input id="name" value={name} onChange={e=>setName(e.target.value)} placeholder="Nom complet du patient" />
+        </div>
         
-      <div className="field">
-  <label htmlFor="type">Type de patient</label>
-        <select id="type" value={type} onChange={e=>setType(e.target.value)}>
-          <option value="REGULAR">Régulier</option>
-          <option value="RESIDENT">Résident</option>
-        </select>
-      </div>
-      <div className="form-row">
-        <div className="field" style={{flex:1}}>
-          <label htmlFor="duration">Durée</label>
-          <input id="duration" type="number" value={duration} onChange={e=>setDuration(Number(e.target.value))} />
+        <div className="space-y-2">
+          <Label htmlFor="phone">Téléphone (international)</Label>
+          <Input id="phone" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+33123456789" />
         </div>
-        <div className="field" style={{flex:1}}>
-          <label htmlFor="unit">Unité</label>
-          <select id="unit" value={unit} onChange={e=>setUnit(e.target.value)}>
-            <option value="HOURS">Heures</option>
-            <option value="DAYS">Jours</option>
-          </select>
+
+        <div className="space-y-2">
+          <Label htmlFor="ssid">SSID (Réseau Wi‑Fi)</Label>
+          {ssidLoading ? (
+            <div className="text-sm text-muted-fg">Chargement des SSIDs…</div>
+          ) : ssids.length === 0 ? (
+            <div className="text-sm text-muted-fg">Aucun SSID disponible. Créez-en un dans le panneau d'administration.</div>
+          ) : (
+            <Select value={selectedSsidId?.toString() ?? ''} onValueChange={val => val && setSelectedSsidId(Number(val))}>
+            <SelectTrigger>
+              <SelectValue>
+                {selectedSsidId ? ssids.find(s => s.id === selectedSsidId)?.name : 'Sélectionner un SSID'}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {ssids.map(s => (
+                <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          )}
         </div>
-      </div>
+          
+        <div className="space-y-2">
+          <Label htmlFor="type">Type de patient</Label>
+          <Select value={type} onValueChange={val => val && setType(val)}>
+            <SelectTrigger>
+              <SelectValue>{type === 'REGULAR' ? 'Régulier' : 'Résident'}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="REGULAR">Régulier</SelectItem>
+              <SelectItem value="RESIDENT">Résident</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-
-  {error && <div style={{color:'var(--danger)'}}>{error}</div>}
-
-          <div style={{display:'flex',justifyContent:'flex-end',gap:8}}>
-            <button className="btn secondary" type="button" onClick={()=>{setName('');setPhone('')}}>Effacer</button>
-            <button className="btn primary" type="submit" disabled={loading}>{loading? 'Création...' : 'Créer l’accès Wi‑Fi'}</button>
+        <div className="flex gap-4">
+          <div className="space-y-2 flex-1">
+            <Label htmlFor="duration">Durée</Label>
+            <Input id="duration" type="number" min="1" value={duration} onChange={e=>setDuration(Number(e.target.value))} />
           </div>
+          <div className="space-y-2 flex-1">
+            <Label htmlFor="unit">Unité</Label>
+            <Select value={unit} onValueChange={val => val && setUnit(val)}>
+              <SelectTrigger>
+                <SelectValue>{unit === 'HOURS' ? 'Heures' : 'Jours'}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="HOURS">Heures</SelectItem>
+                <SelectItem value="DAYS">Jours</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {error && <div className="text-sm text-red-700 dark:text-red-400 font-medium">{error}</div>}
+
+        <div className="flex justify-end gap-3 pt-2">
+          <Button variant="secondary" type="button" onClick={()=>{setName('');setPhone('')}} className="bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border-0">Effacer</Button>
+          <Button variant="default" type="submit" disabled={loading} className="bg-[#00416A] hover:bg-[#00416A]/90 text-white">{loading? 'Création...' : 'Créer l’accès Wi‑Fi'}</Button>
+        </div>
+      </form>
 
       {/* success card showing generated password */}
       {createdSession && (
-        <div className="success-card" role="status" aria-live="polite">
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
-            <div>
-              <div className="success-title">Session créée</div>
-              <div className="muted" style={{fontSize:13}}>Partagez ce mot de passe Wi‑Fi avec le patient</div>
+        <Card className="border-success/20 bg-success/5 shadow-sm mt-6 animate-in fade-in slide-in-from-bottom-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-success text-lg">
+              <CheckCircle2 className="h-5 w-5" />
+              Session créée
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="text-sm text-muted-fg">
+                Partagez ce mot de passe Wi‑Fi avec le patient
+              </div>
+              <div className="flex items-center gap-2 bg-background border rounded-md px-3 py-2 shadow-sm">
+                <span className="font-mono font-bold text-lg tracking-wider text-primary">{createdSession.password}</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-muted-fg hover:text-foreground"
+                  onClick={async()=>{
+                    try{
+                      await navigator.clipboard.writeText(createdSession.password)
+                      setCopied(true)
+                      setTimeout(()=>setCopied(false),2000)
+                    }catch(err){
+                      // fallback
+                      const el = document.createElement('textarea')
+                      el.value = createdSession.password
+                      document.body.appendChild(el)
+                      el.select()
+                      document.execCommand('copy')
+                      document.body.removeChild(el)
+                      setCopied(true)
+                      setTimeout(()=>setCopied(false),2000)
+                    }
+                  }}
+                  title="Copier le mot de passe"
+                >
+                  {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
-            <div style={{display:'flex',alignItems:'center',gap:8}}>
-              <div className="password-badge pulse">{createdSession.password}</div>
-              <button
-                className={copied? 'copy-btn copied' : 'copy-btn'}
-                type="button"
-                onClick={async()=>{
-                  try{
-                    await navigator.clipboard.writeText(createdSession.password)
-                    setCopied(true)
-                    setTimeout(()=>setCopied(false),2000)
-                  }catch(err){
-                    // fallback for older browsers
-                    const el = document.createElement('textarea')
-                    el.value = createdSession.password
-                    document.body.appendChild(el)
-                    el.select()
-                    document.execCommand('copy')
-                    document.body.removeChild(el)
-                    setCopied(true)
-                    setTimeout(()=>setCopied(false),2000)
-                  }
-                }}
-              >{copied? 'Copié' : 'Copier'}</button>
+            <div className="flex justify-end pt-2">
+              <Button variant="secondary" size="sm" onClick={()=>setCreatedSession(null)}>
+                Créer une autre session
+              </Button>
             </div>
-          </div>
-
-          <div style={{marginTop:10,display:'flex',justifyContent:'flex-end'}}>
-            <button className="btn secondary" type="button" onClick={()=>setCreatedSession(null)}>Créer une autre</button>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
-    </form>
+    </div>
   )
 }

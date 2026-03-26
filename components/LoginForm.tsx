@@ -1,6 +1,11 @@
 "use client"
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { TypographyP, TypographySmall, TypographyMuted } from '@/components/ui/typography'
+import { AlertCircle } from 'lucide-react'
 
 export default function LoginForm(){
   const [email, setEmail] = useState('')
@@ -9,7 +14,7 @@ export default function LoginForm(){
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  async function handleSubmit(e: React.FormEvent){
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
     setError(null)
     if(!email || !password){
@@ -49,25 +54,52 @@ export default function LoginForm(){
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="secretary@example.com" />
+    <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-label">Email</Label>
+        <Input 
+          id="email" 
+          type="email" 
+          value={email} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setEmail(e.target.value)}
+          placeholder="secretary@clinic.com"
+          disabled={loading}
+          className="h-11"
+        />
       </div>
 
-      <div>
-        <label htmlFor="password">Mot de passe</label>
-        <input id="password" type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" />
+      <div className="space-y-2">
+        <Label htmlFor="password" className="text-label">Mot de passe</Label>
+        <Input 
+          id="password" 
+          type="password" 
+          value={password} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>)=>setPassword(e.target.value)}
+          placeholder="••••••••"
+          disabled={loading}
+          className="h-11"
+        />
       </div>
 
-      {error && <div style={{color:'var(--danger)',fontSize:13}}>{error}</div>}
+      {error && (
+        <div className="flex gap-3 rounded-lg bg-red-50 border border-red-200 p-3">
+          <AlertCircle className="h-5 w-5 text-danger flex-shrink-0 mt-0.5" />
+          <TypographySmall className="text-danger">{error}</TypographySmall>
+        </div>
+      )}
 
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:8}}>
-        <div className="muted">Mot de passe oublié ?</div>
-        <button className="btn primary" type="submit" disabled={loading}>{loading? 'Connexion…' : 'Se connecter'}</button>
+      <div className="space-y-4 pt-2">
+        <Button 
+          type="submit" 
+          disabled={loading}
+          className="w-full h-11 btn-primary text-base font-semibold"
+        >
+          {loading? 'Connexion…' : 'Se connecter'}
+        </Button>
+        <TypographyMuted className="text-center">
+          Les utilisateurs connectés seront redirigés vers le tableau de bord.
+        </TypographyMuted>
       </div>
-
-      <div className="help">Les utilisateurs connectés seront redirigés vers le tableau de bord.</div>
     </form>
   )
 }
