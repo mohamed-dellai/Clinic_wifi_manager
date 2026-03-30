@@ -22,6 +22,11 @@ export function TypographySmall({ children, className = "" }: { children: React.
   return <p className={`text-body-sm ${className}`}>{children}</p>
 }
 
+export function TypographyLead({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  // slightly larger, muted lead paragraph for page descriptions
+  return <p className={`text-base text-muted-fg mt-2 max-w-2xl leading-relaxed ${className}`}>{children}</p>
+}
+
 export function TypographyMuted({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <p className={`text-body-sm text-muted-fg ${className}`}>{children}</p>
 }

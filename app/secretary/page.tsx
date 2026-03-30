@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import AppLayout from '@/components/AppLayout'
 import MaintenanceWorkerWrapper from '@/components/MaintenanceWorkerWrapper'
-import { TypographyH1, TypographySmall } from '@/components/ui/typography'
+import { TypographyH1, TypographySmall, TypographyLead } from '@/components/ui/typography'
+import BackToDashboardButton from '@/components/BackToDashboardButton'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, List, ArrowRight } from 'lucide-react'
@@ -12,9 +13,14 @@ export default async function SecretaryPage(){
       <MaintenanceWorkerWrapper />
       
       <div className="p-8">
-        <div className="mb-8">
-          <TypographyH1>Tableau de bord</TypographyH1>
-          <TypographySmall className="text-muted-fg mt-2">Gérez vos sessions WiFi facilement</TypographySmall>
+        <div className="mb-8" style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
+          <div>
+            <TypographyH1>Tableau de bord</TypographyH1>
+            <TypographyLead>Gérez vos sessions WiFi facilement</TypographyLead>
+          </div>
+          <div>
+            <BackToDashboardButton />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">

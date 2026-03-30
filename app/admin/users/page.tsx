@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { verifyJwt } from '../../../lib/auth'
 import AdminUsers from '../../../components/AdminUsers'
 import BackToDashboardButton from '../../../components/BackToDashboardButton'
+import { TypographyLead } from '@/components/ui/typography'
 
 export default async function AdminUsersPage(){
   const cookieStore = await cookies()
@@ -16,7 +17,10 @@ export default async function AdminUsersPage(){
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
         <div>
           <h1>Gérer les utilisateurs</h1>
-          <p className="muted">Créer et supprimer des utilisateurs de l'application.</p>
+          <TypographyLead>Créer et supprimer des utilisateurs de l'application.</TypographyLead>
+        </div>
+        <div>
+          <BackToDashboardButton />
         </div>
       </div>
 
@@ -25,7 +29,6 @@ export default async function AdminUsersPage(){
           <AdminUsers />
         </div>
       </div>
-                  <BackToDashboardButton/>
 
     </main>
   )

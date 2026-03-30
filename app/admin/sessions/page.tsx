@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { verifyJwt } from '../../../lib/auth'
 import AdminSessions from '../../../components/AdminSessions'
 import BackToDashboardButton from '../../../components/BackToDashboardButton'
+import { TypographyLead } from '@/components/ui/typography'
 
 export default async function AdminSessionsPage(){
   const cookieStore = await cookies()
@@ -16,7 +17,10 @@ export default async function AdminSessionsPage(){
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
         <div>
           <h1>Toutes les sessions</h1>
-          <p className="muted">Toutes les sessions Wi‑Fi créées dans le système et l'utilisateur qui les a émises.</p>
+          <TypographyLead>Toutes les sessions Wi‑Fi créées dans le système et l'utilisateur qui les a émises.</TypographyLead>
+        </div>
+        <div>
+          <BackToDashboardButton />
         </div>
       </div>
 
@@ -25,7 +29,6 @@ export default async function AdminSessionsPage(){
           <AdminSessions />
         </div>
       </div>
-            <BackToDashboardButton/>
 
     </main>
   )

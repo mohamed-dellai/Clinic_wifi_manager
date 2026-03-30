@@ -1,6 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
 
 export default function BackToDashboardButton({ children }:{ children?: React.ReactNode }){
   const [role, setRole] = useState<string | null>(null)
@@ -24,8 +26,10 @@ export default function BackToDashboardButton({ children }:{ children?: React.Re
   }
 
   return (
-    <button className="muted" onClick={go} disabled={loading} style={{background:'transparent',border:'none',padding:0,cursor:loading? 'default' : 'pointer'}} aria-label="Retour au tableau de bord">
-      {children || '← Retour au tableau de bord'}
-    </button>
+    //make this button a pointer cursor
+    <Button variant="outline" size="sm" onClick={go} disabled={loading} className="inline-flex items-center gap-2" style={{ cursor: 'pointer' }}>
+      <ArrowLeft className="w-4 h-4" />
+      <span className="hidden sm:inline">Retour</span>
+    </Button>
   )
 }

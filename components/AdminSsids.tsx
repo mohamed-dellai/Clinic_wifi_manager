@@ -1,6 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import BackToDashboardButton from './BackToDashboardButton'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Trash2 } from 'lucide-react'
 
 type Ssid = { id:number, name:string, description?:string, createdAt:string }
 
@@ -46,32 +48,48 @@ export default function AdminSsids(){
     }catch(err){ console.error(err); alert('Erreur réseau') }
   }
 
-  if(loading) return <div>Chargement des points d'accès…</div>
-  if(error) return <div style={{color:'var(--danger)'}}>{error}</div>
+  if(loading) return <div className="text-sm text-muted-fg animate-pulse">Chargement des points d'accès…</div>
+  if(error) return <div className="text-sm text-destructive">{error}</div>
 
   return (
-    <div>
-      <form onSubmit={handleCreate} style={{display:'flex',gap:8,marginBottom:12}}>
-            <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nom du point d'accès" />
-            <input value={description} onChange={e=>setDescription(e.target.value)} placeholder="description (optionnelle)" />
-            <button className="btn" type="submit">Créer SSID</button>
-          </form>
+    <div className="space-y-6">
+      <div className="bg-card p-4 rounded-xl border shadow-sm">
+        <form onSubmit={handleCreate} className="flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-[180px]">
+            <Input value={name} onChange={e=>setName(e.target.value)} placeholder="Nom du point d'accès" />
+          </div>
+          <div className="flex-1 min-w-[220px]">
+            <Input value={description} onChange={e=>setDescription(e.target.value)} placeholder="description (optionnelle)" />
+          </div>
+          <div>
+            <Button type="submit" variant="secondary" className="cursor-pointer bg-primary text-primary-foreground px-4">
+              Créer SSID
+            </Button>
+          </div>
+        </form>
+      </div>
 
-  {ssids.length === 0 && <div className="muted">Aucun point d'accès.</div>}
-      {ssids.map(s=> (
-        <div key={s.id} style={{padding:12,marginTop:8,background:'var(--surface)',borderRadius:8,border:'1px solid rgba(12,20,40,0.04)'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+      {ssids.length === 0 && (
+        <div className="text-center p-6 border border-dashed rounded-lg text-muted-fg bg-surface/50">Aucun point d'accès.</div>
+      )}
+
+      <div className="space-y-4">
+        {ssids.map(s=> (
+          <div key={s.id} className="group flex items-center justify-between p-5 bg-card border rounded-xl shadow-sm hover:shadow-md transition-all">
             <div>
-              <div><strong>{s.name}</strong></div>
-              {s.description && <div className="muted" style={{fontSize:13}}>{s.description}</div>}
-              <div className="muted" style={{fontSize:13}}>Créé le {new Date(s.createdAt).toLocaleString()}</div>
+              <div className="font-medium">{s.name}</div>
+              {s.description && <div className="text-sm text-muted-foreground">{s.description}</div>}
+              <div className="text-sm text-muted-foreground">Créé le {new Date(s.createdAt).toLocaleString()}</div>
             </div>
-            <div>
-              <button className="btn" onClick={()=>handleDelete(s.id)}>Supprimer</button>
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button variant="destructive" size="sm" onClick={()=>handleDelete(s.id)} className="cursor-pointer">
+                <Trash2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Supprimer</span>
+              </Button>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

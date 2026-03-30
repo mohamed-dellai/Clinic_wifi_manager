@@ -18,6 +18,9 @@ export default async function AdminSsidsPage(){
           <h1>Gérer les SSID</h1>
           <p className="muted">Créer et supprimer des points d'accès.</p>
         </div>
+        <div>
+          <BackToDashboardButton />
+        </div>
       </div>
 
       <div style={{marginTop:18}}>
@@ -25,7 +28,6 @@ export default async function AdminSsidsPage(){
           <AdminSsids />
         </div>
       </div>
-            <BackToDashboardButton/>
 
     </main>
   )

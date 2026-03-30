@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { verifyJwt } from '../../lib/auth'
 import AuthCard from '@/components/AuthCard'
 import LoginForm from '@/components/LoginForm'
-import { TypographySmall } from '@/components/ui/typography'
+import { TypographySmall, TypographyLead } from '@/components/ui/typography'
 
 export const metadata = {
   title: 'Connexion — Clinic',
@@ -26,9 +26,7 @@ export default async function LoginPage(){
           <LoginForm />
         </AuthCard>
         <div className="text-center mt-6">
-          <TypographySmall className="text-muted-fg">
-            Système de gestion WiFi professionnel
-          </TypographySmall>
+          <TypographyLead className="text-center">Système de gestion WiFi professionnel</TypographyLead>
         </div>
       </div>
     </main>
