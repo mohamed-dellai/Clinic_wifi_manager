@@ -11,9 +11,9 @@ export default async function StatisticSecretairePage() {
       <div className="p-8">
         <div className="mb-8 flex items-center justify-between gap-3">
           <div>
-            <TypographyH1>Statistiques — Secrétaires</TypographyH1>
+            <TypographyH1>Statistiques</TypographyH1>
             <TypographyLead>
-              Tableau de bord des statistiques essentielles pour le secrétariat.
+              Tableau de bord des statistiques.
             </TypographyLead>
           </div>
           <BackToDashboardButton />
