@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Copy, CheckCircle2 } from 'lucide-react'
 
 export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>void }){
-  const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [duration, setDuration] = useState(4)
   const [unit, setUnit] = useState('HOURS')
@@ -33,11 +32,11 @@ export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>v
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
-        body: JSON.stringify({ name, phone, duration, unit, type, ssidId: selectedSsidId })
+        body: JSON.stringify({ phone, duration, unit, type, ssidId: selectedSsidId })
       })
       const data = await res.json()
       if(!res.ok){ setError(data?.error||'Échec'); setLoading(false); return }
-      setName(''); setPhone(''); setDuration(4)
+      setPhone(''); setDuration(4)
       setLoading(false)
       setCreatedSession(data.session)
       setCopied(false)
@@ -79,11 +78,6 @@ export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>v
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="name">Nom (optionnel)</Label>
-          <Input id="name" value={name} onChange={e=>setName(e.target.value)} placeholder="Nom complet du patient" />
-        </div>
-        
         <div className="space-y-2">
           <Label htmlFor="phone">Téléphone (international)</Label>
           <Input id="phone" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+33123456789" />
@@ -146,7 +140,7 @@ export default function CreateSessionForm({ onCreated }:{ onCreated?: (s:any)=>v
         {error && <div className="text-sm text-red-700 dark:text-red-400 font-medium">{error}</div>}
 
         <div className="flex justify-end gap-3 pt-2">
-          <Button variant="secondary" type="button" onClick={()=>{setName('');setPhone('')}} className="bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border-0">Effacer</Button>
+          <Button variant="secondary" type="button" onClick={()=>{setPhone('')}} className="bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border-0">Effacer</Button>
           <Button variant="default" type="submit" disabled={loading} className="bg-[#00416A] hover:bg-[#00416A]/90 text-white">{loading? 'Création...' : 'Créer l’accès Wi‑Fi'}</Button>
         </div>
       </form>

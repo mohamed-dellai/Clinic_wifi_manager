@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { add } from 'date-fns'
 import SessionFilter, { SessionFilters } from './SessionFilter'
 import { Button } from '@/components/ui/button'
-import { Copy, Trash2, Wifi, Clock, User, Phone } from 'lucide-react'
+import { Copy, Trash2, Wifi, Clock, User, Phone, Download } from 'lucide-react'
 
 export default function SecretarySessions(){
   const [sessions, setSessions] = useState<any[]>([])
@@ -35,6 +35,32 @@ export default function SecretarySessions(){
 
   useEffect(()=>{ load() },[])
 
+  async function handleExport(){
+    try{
+      const XLSX = await import('xlsx')
+      const data = filtered.map(s=>({
+        Password: s.password,
+        SSID: s.ssid?.name ?? '',
+        Phone: s.patient?.phone ?? '',
+        CreatedAt: new Date(s.createdAt).toLocaleString(),
+        Duration: formatDuration(s.duration, s.unit),
+        Active: s.isActive ? 'Yes' : 'No',
+      }))
+
+      const ws = XLSX.utils.json_to_sheet(data)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Sessions')
+      const filename = `sessions-${new Date().toISOString().slice(0,10)}.xlsx`
+      XLSX.writeFile(wb, filename)
+    }catch(err){ console.error(err); alert('Échec de l\'export') }
+  }
+
+  function formatDuration(n:number, unit:string){
+    if(unit === 'HOURS') return `${n} ${n > 1 ? 'heures' : 'heure'}`
+    if(unit === 'DAYS') return `${n} ${n > 1 ? 'jours' : 'jour'}`
+    return `${n} ${unit.toLowerCase()}`
+  }
+
   useEffect(()=>{
     // load ssids for filter select
     let mounted = true
@@ -53,7 +79,7 @@ export default function SecretarySessions(){
     // text search
     if(filters.q){
       const q = filters.q.toLowerCase()
-      const target = `${s.password} ${s.patient?.name || ''} ${s.patient?.phone || ''}`.toLowerCase()
+      const target = `${s.password} ${s.patient?.phone || ''}`.toLowerCase()
       if(!target.includes(q)) return false
     }
     // ssid
@@ -80,7 +106,15 @@ export default function SecretarySessions(){
   return (
     <div className="space-y-6">
       <div className="bg-card p-4 rounded-xl border shadow-sm">
-        <SessionFilter ssids={ssids} onChange={(f)=>setFilters(f)} />
+        <div className="flex items-center justify-between gap-4">
+          <SessionFilter ssids={ssids} onChange={(f)=>setFilters(f)} />
+          <div className="flex-shrink-0">
+            <Button onClick={handleExport} variant="secondary" size="sm" className="flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer">
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline">Exporter Excel</span>
+            </Button>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -115,16 +149,12 @@ export default function SecretarySessions(){
                 
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-fg">
                   <div className="flex items-center gap-1.5">
-                    <User className="w-4 h-4" />
-                    <span className="font-medium text-foreground">{s.patient?.name ?? '—'}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
                     <Phone className="w-4 h-4" />
-                    <span>{s.patient?.phone ?? '—'}</span>
+                    <span className="font-medium text-foreground">{s.patient?.phone ?? '—'}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4" />
-                    <span>{new Date(s.createdAt).toLocaleString()} ({s.duration} {s.unit.toLowerCase()})</span>
+                    <span>{new Date(s.createdAt).toLocaleString()} ({formatDuration(s.duration, s.unit)})</span>
                   </div>
                 </div>
               </div>
