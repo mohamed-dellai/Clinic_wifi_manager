@@ -124,3 +124,31 @@ export async function DELETE(req: Request){
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
+
+export async function PATCH(req: Request){
+  try{
+    const header = req.headers.get('cookie') || ''
+    const parsed = cookie.parse(header || '')
+    const token = parsed['clinic_token']
+    const payload: any = token ? verifyJwt(token) : null
+    if(!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const body = await req.json()
+    const { id, duration, unit } = body
+    if(!id || !duration || !unit) return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+
+    const existing = await prisma.wifiPassword.findUnique({ where: { id: Number(id) } })
+    if(!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+    // allow admins or the creator to update
+    if(payload.role !== 'ADMIN' && existing.createdById !== payload.userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const updated = await prisma.wifiPassword.update({ where: { id: Number(id) }, data: { duration: Number(duration), unit } })
+    return NextResponse.json({ ok: true, session: updated })
+  }catch(err){
+    console.error(err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  }
+}

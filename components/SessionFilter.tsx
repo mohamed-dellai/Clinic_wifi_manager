@@ -13,6 +13,7 @@ export type SessionFilters = {
   dateFrom?: string | null
   dateTo?: string | null
   isActive?: 'all' | 'active' | 'inactive'
+  used?: 'all' | 'used' | 'unused'
 }
 
 export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ssid[], onChange: (f: SessionFilters)=>void, initial?: SessionFilters }){
@@ -21,6 +22,7 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
   const [dateFrom, setDateFrom] = useState(initial?.dateFrom || '')
   const [dateTo, setDateTo] = useState(initial?.dateTo || '')
   const [isActive, setIsActive] = useState<'all'|'active'|'inactive'>(initial?.isActive || 'all')
+  const [used, setUsed] = useState<'all'|'used'|'unused'>(initial?.used || 'all')
 
   useEffect(()=>{
     const payload: SessionFilters = {
@@ -29,9 +31,10 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
       isActive: isActive || undefined,
+      used: used || undefined,
     }
     onChange(payload)
-  },[q, ssidId, dateFrom, dateTo, isActive])
+  },[q, ssidId, dateFrom, dateTo, isActive, used])
 
   return (
     <div className="flex flex-col gap-4">
@@ -87,6 +90,22 @@ export default function SessionFilter({ ssids, onChange, initial }: { ssids?: Ss
               <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="active">Actives</SelectItem>
               <SelectItem value="inactive">Inactives</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {/* Used */}
+        <div className="w-full lg:w-36 space-y-1.5">
+          <Label className="text-xs text-muted-fg">Utilisé</Label>
+          <Select value={used} onValueChange={(val: any) => setUsed(val)}>
+            <SelectTrigger>
+              <SelectValue>
+                {used === 'all' ? 'Tous' : used === 'used' ? 'Utilisés' : 'Non utilisés'}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous</SelectItem>
+              <SelectItem value="used">Utilisés</SelectItem>
+              <SelectItem value="unused">Non utilisés</SelectItem>
             </SelectContent>
           </Select>
         </div>

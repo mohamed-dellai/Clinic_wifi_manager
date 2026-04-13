@@ -4,6 +4,8 @@ import { add } from 'date-fns'
 import SessionFilter, { SessionFilters } from './SessionFilter'
 import { Button } from '@/components/ui/button'
 import { Copy, Trash2, Wifi, Clock, User, Phone, Download } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+// using native select for the edit form
 
 export default function SecretarySessions(){
   const [sessions, setSessions] = useState<any[]>([])
@@ -11,6 +13,9 @@ export default function SecretarySessions(){
   const [error, setError] = useState<string | null>(null)
   const [ssids, setSsids] = useState<any[]>([])
   const [filters, setFilters] = useState<SessionFilters>({})
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editDuration, setEditDuration] = useState<number>(1)
+  const [editUnit, setEditUnit] = useState<string>('HOURS')
 
   async function load(){
     setLoading(true); setError(null)
@@ -33,6 +38,24 @@ export default function SecretarySessions(){
     }catch(err){ console.error(err); alert('Network error') }
   }
 
+  async function handleStartEdit(s:any){
+    setEditingId(s.id)
+    setEditDuration(Number(s.duration) || 1)
+    setEditUnit(s.unit || 'HOURS')
+  }
+
+  async function handleSaveEdit(id:number){
+    try{
+      const res = await fetch('/api/sessions', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ id, duration: Number(editDuration), unit: editUnit }) })
+      const data = await res.json()
+      if(!res.ok){ alert(data?.error || 'Échec de la mise à jour'); return }
+      setEditingId(null)
+      load()
+    }catch(err){ console.error(err); alert('Network error') }
+  }
+
+  function handleCancelEdit(){ setEditingId(null) }
+
   useEffect(()=>{ load() },[])
 
   async function handleExport(){
@@ -43,8 +66,9 @@ export default function SecretarySessions(){
         SSID: s.ssid?.name ?? '',
         Phone: s.patient?.phone ?? '',
         CreatedAt: new Date(s.createdAt).toLocaleString(),
-        Duration: formatDuration(s.duration, s.unit),
-        Active: s.isActive ? 'Yes' : 'No',
+            Duration: formatDuration(s.duration, s.unit),
+            Active: s.isActive ? 'Yes' : 'No',
+            Used: s.used ? 'Yes' : 'No',
       }))
 
       const ws = XLSX.utils.json_to_sheet(data)
@@ -100,6 +124,11 @@ export default function SecretarySessions(){
       if(filters.isActive === 'active' && !s.isActive) return false
       if(filters.isActive === 'inactive' && s.isActive) return false
     }
+    // used
+    if((filters as any).used && (filters as any).used !== 'all'){
+      if((filters as any).used === 'used' && !s.used) return false
+      if((filters as any).used === 'unused' && s.used) return false
+    }
     return true
   })
 
@@ -140,11 +169,23 @@ export default function SecretarySessions(){
                     <Wifi className="w-3 h-3" />
                     {s.ssid?.name ?? 'SSID'}
                   </span>
-                  {isExpired ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-700 dark:text-red-400">Expirée</span>
-                  ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">Active</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {/* Status badge: Expired / Inactive / Active */}
+                    {isExpired ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-700 dark:text-red-400">Expirée</span>
+                    ) : !s.isActive ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-200/40 text-slate-800 dark:bg-slate-700/30 dark:text-slate-200">Inactivée</span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">Active</span>
+                    )}
+
+                    {/* Used badge: Utilisée / Non utilisée */}
+                    {s.used ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/15 text-indigo-700 dark:text-indigo-400">Utilisée</span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted-foreground/8 text-muted-fg">Non utilisée</span>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-fg">
@@ -160,24 +201,50 @@ export default function SecretarySessions(){
               </div>
               
               <div className="flex items-center gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={()=>navigator.clipboard?.writeText(s.password)}
                   className="flex items-center gap-2"
                 >
                   <Copy className="w-4 h-4" />
                   <span className="hidden sm:inline">Copier</span>
                 </Button>
-                <Button 
-                  variant="destructive" 
-                  size="sm" 
-                  onClick={()=>handleDelete(s.id)}
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Supprimer</span>
-                </Button>
+
+                {editingId === s.id ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-20">
+                      <Input value={String(editDuration)} onChange={(e)=>setEditDuration(Number(e.target.value))} type="number" min={1} />
+                    </div>
+                    <select className="h-8 rounded-lg border border-input bg-background px-2 text-sm" value={editUnit} onChange={(e)=>setEditUnit(e.target.value)}>
+                      <option value="HOURS">Heures</option>
+                      <option value="DAYS">Jours</option>
+                    </select>
+                    <Button size="sm" onClick={()=>handleSaveEdit(s.id)} className="px-3">Enregistrer</Button>
+                    <Button size="sm" variant="secondary" onClick={handleCancelEdit}>Annuler</Button>
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={()=>handleStartEdit(s)}
+                      className="flex items-center gap-2"
+                    >
+                      <Clock className="w-4 h-4" />
+                      <span className="hidden sm:inline">Modifier durée</span>
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={()=>handleDelete(s.id)}
+                      className="flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Supprimer</span>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           )

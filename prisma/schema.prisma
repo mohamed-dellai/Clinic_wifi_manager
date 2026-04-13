@@ -73,6 +73,8 @@ model WifiPassword {
   ssid         Ssid?      @relation(fields: [ssidId], references: [id])
   ssidId       Int?
   isActive     Boolean    @default(true)
+  // mark whether the password has been used at least once
+  used         Boolean    @default(false)
   createdAt    DateTime   @default(now())
 }
 
